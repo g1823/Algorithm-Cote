@@ -15,6 +15,7 @@ public class Hello {
         obj.equals(1);
         System.out.println("Test");
         System.out.println("Test");
+        System.out.println("Test");
         System.out.println("Test2");
         Integer i = new Integer(20);
         Integer i2 = new Integer(10);
