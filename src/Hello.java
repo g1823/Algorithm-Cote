@@ -13,6 +13,7 @@ public class Hello {
         int a = 0;
         Object obj = new Object();
         obj.equals(1);
+        System.out.println("Test");
         Integer i = new Integer(20);
         Integer i2 = new Integer(10);
         i.equals(i2);
