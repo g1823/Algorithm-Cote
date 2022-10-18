@@ -14,10 +14,6 @@ public class Hello {
         Object obj = new Object();
         obj.equals(1);
         System.out.println("Test");
-        System.out.println("Test");
-        System.out.println("Test");
-        System.out.println("Test2");
-        System.out.println("Test");
         Integer i = new Integer(20);
         Integer i2 = new Integer(10);
         i.equals(i2);
