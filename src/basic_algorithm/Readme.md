@@ -13,7 +13,9 @@
 ### 1、[组合问题](dynamic_programming%2Fcombination)
 - [01背包](dynamic_programming%2Fcombination%2FZeroOneBackpack.java)
 ## 五、[贪心法](greedy):
-
+- [最大子序列和](greedy%2Fcombination%2FMaximumSumSubarray.java)
 ## 六、[回溯法](backtracking):
-
+- [八皇后（N皇后）](backtracking%2Fcombination%2FEightQueens.java)
+- [八皇后改进（N皇后）](backtracking%2Fcombination%2FEightQueens2.java)
+- [01背包](backtracking%2Fcombination%2FZeroOneBackpackBacktrack.java)
 ## 七、[分支限界法](branch_bound):
