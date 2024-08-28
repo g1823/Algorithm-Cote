@@ -1,4 +1,4 @@
-package basic_algorithm.divide_conquer;
+package basicAlgorithm.divide_conquer;
 
 import java.util.Arrays;
 

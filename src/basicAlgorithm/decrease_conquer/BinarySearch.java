@@ -1,7 +1,7 @@
-package basic_algorithm.decrease_conquer;
+package basicAlgorithm.decrease_conquer;
 
 
-import basic_algorithm.divide_conquer.MergeSort;
+import basicAlgorithm.divide_conquer.MergeSort;
 
 /**
  * @author: gj

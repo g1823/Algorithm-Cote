@@ -1,4 +1,4 @@
-package basic_algorithm.decrease_conquer;
+package basicAlgorithm.decrease_conquer;
 
 import java.util.Arrays;
 

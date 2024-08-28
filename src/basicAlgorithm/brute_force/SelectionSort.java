@@ -1,4 +1,4 @@
-package basic_algorithm.brute_force;
+package basicAlgorithm.brute_force;
 
 import java.util.Arrays;
 

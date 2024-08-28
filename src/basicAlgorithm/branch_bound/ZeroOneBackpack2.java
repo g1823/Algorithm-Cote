@@ -1,4 +1,4 @@
-package basic_algorithm.branch_bound;
+package basicAlgorithm.branch_bound;
 
 import java.util.*;
 

@@ -1,4 +1,4 @@
-package basic_algorithm.dynamic_programming;
+package basicAlgorithm.dynamic_programming;
 
 /**
  * @author: gj
