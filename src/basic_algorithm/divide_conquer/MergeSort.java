@@ -1,4 +1,4 @@
-package basic_algorithm.divide_conquer.sort;
+package basic_algorithm.divide_conquer;
 
 import java.util.Arrays;
 

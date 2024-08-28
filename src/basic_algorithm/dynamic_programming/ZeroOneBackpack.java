@@ -1,4 +1,4 @@
-package basic_algorithm.dynamic_programming.combination;
+package basic_algorithm.dynamic_programming;
 
 import java.util.ArrayList;
 import java.util.Collections;

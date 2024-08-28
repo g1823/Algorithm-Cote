@@ -1,4 +1,4 @@
-package basic_algorithm.branch_bound.combination;
+package basic_algorithm.branch_bound;
 
 public class Item {
     /**

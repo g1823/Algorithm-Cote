@@ -1,4 +1,4 @@
-package basic_algorithm.greedy.combination;
+package basic_algorithm.greedy;
 
 /**
  * @Package chapter01

@@ -1,4 +1,4 @@
-package basic_algorithm.decrease_conquer.sort;
+package basic_algorithm.decrease_conquer;
 
 import java.util.Arrays;
 

@@ -1,4 +1,4 @@
-package basic_algorithm.brute_force.sort;
+package basic_algorithm.brute_force;
 
 import java.util.Arrays;
 
