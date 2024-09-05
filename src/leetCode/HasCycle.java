@@ -24,4 +24,21 @@ public class HasCycle {
         }
         return false;
     }
+
+    /**
+     * 快慢指针
+     *
+     * @param head 指针头部
+     * @return 是否有环
+     */
+    public boolean hasCycle2(ListNode head) {
+        if (head == null || head.next == null) return false;
+        ListNode slowNode = head, fastNode = head.next;
+        while (slowNode != fastNode) {
+            if (fastNode == null || fastNode.next == null) return false;
+            slowNode = slowNode.next;
+            fastNode = fastNode.next.next;
+        }
+        return true;
+    }
 }
