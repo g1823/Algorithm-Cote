@@ -1,9 +1,8 @@
-package leetCode;
+package leetCode.simple;
 
 import leetCode.help.TreeNode;
 
 import java.util.LinkedList;
-import java.util.Queue;
 
 /**
  * @author: gj

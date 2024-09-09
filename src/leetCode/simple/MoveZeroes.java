@@ -1,4 +1,4 @@
-package leetCode;
+package leetCode.simple;
 
 /**
  * @author: gj
