@@ -1,9 +1,8 @@
-package leetCode;
+package leetCode.simple;
 
 import leetCode.help.TreeNode;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
