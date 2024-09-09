@@ -40,15 +40,16 @@ public class LowestCommonAncestor {
     }
 
     public boolean dfs(TreeNode node, TreeNode p, TreeNode q, List<TreeNode> result) {
-        if (node == p || node == q) return true;
         if (node == null) return false;
         if (!result.isEmpty()) return true;
         boolean left = dfs(node.left, p, q, result);
         boolean right = dfs(node.right, p, q, result);
-        if (left && right) {
+        // 当还未找到公共父节点 && [左子树和右子树分别含有一个待寻找节点 或 当前节点等于待寻找节点且左子树或右子树已经找到另一个节点]
+        if (result.isEmpty() && (left && right) || (node == p || node == q) && (left || right)) {
             result.add(node);
-            return true;
         }
-        return false;
+        // 只要当前节点子树含有带寻找节点或当前节点等于待寻找节点则返回true；
+        // 注意，这一步判断需要放在最后，避免先找到节点P,然后节点q在节点p的子树中直接返回找不到。
+        return left || right || (node == p || node == q);
     }
 }
