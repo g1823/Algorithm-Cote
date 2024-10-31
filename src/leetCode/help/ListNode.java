@@ -13,4 +13,9 @@ public class ListNode {
         val = x;
         next = node;
     }
+
+    @Override
+    public String toString() {
+        return "val = " + val;
+    }
 }
