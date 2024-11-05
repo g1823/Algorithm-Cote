@@ -9,13 +9,16 @@ import java.util.*;
 public class WordBreak {
     public static void main(String[] args) {
         WordBreak wordBreak = new WordBreak();
-//        String s = "leetcode";
-//        List<String> wordDict = new ArrayList<>(Arrays.asList("leet", "code"));
-        String s = "aaaaaaa";
-        List<String> wordDict = new ArrayList<>(Arrays.asList("aaaa", "aaa"));
-        System.out.println(wordBreak.wordBreak(s, wordDict));
+        String s = "leetcode";
+        List<String> wordDict = new ArrayList<>(Arrays.asList("leet", "code"));
+//        String s = "aaaaaaa";
+//        List<String> wordDict = new ArrayList<>(Arrays.asList("aaaa", "aaa"));
+        System.out.println(wordBreak.wordBreak2(s, wordDict));
     }
 
+    /**
+     * 回溯法，超时
+     */
     public boolean wordBreak(String s, List<String> wordDict) {
         Set<String> wordSet = new HashSet<>(wordDict);
         return dfs(s, 0, wordSet);
@@ -36,5 +39,26 @@ public class WordBreak {
         }
         return false;
     }
+
+    /**
+     * 动态规划
+     */
+    public boolean wordBreak2(String s, List<String> wordDict) {
+        Set<String> wordSet = new HashSet<>(wordDict);
+        int length = s.length();
+        boolean[] dp = new boolean[length + 1];
+        dp[0] = true;
+        for (int i = 1; i < length + 1; i++) {
+            int j = i > 20 ? i - 20 : 0;//因为每个单词最长20
+            for (; j < i; j++) {
+                if (dp[j] && wordSet.contains(s.substring(j, i))) {
+                    dp[i] = true;
+                    break;
+                }
+            }
+        }
+        return dp[length];
+    }
+
 
 }
