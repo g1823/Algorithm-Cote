@@ -21,7 +21,6 @@ public class HammingDistance {
     }
 
     /**
-     * TODO：
      * f(x)=x & (x−1) ： f(x) 为 x 删去其二进制表示中最右侧的 1 的结果
      * @param x
      * @param y

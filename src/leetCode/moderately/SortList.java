@@ -64,7 +64,7 @@ public class SortList {
         return thisNode.next;
     }
 
-    // TODO:查找链表的中间结点（快慢指针用法）
+    // 查找链表的中间结点（快慢指针用法）
     public ListNode getMidNode(ListNode head, ListNode tail) {
         ListNode tHead = head, tTail = head;
         while (tTail != tail) {

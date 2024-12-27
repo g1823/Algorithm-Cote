@@ -123,7 +123,6 @@ public class NumIslands {
 
 
     /**
-     * TODO:并查集
      *
      * @param grid 原始数据
      * @return

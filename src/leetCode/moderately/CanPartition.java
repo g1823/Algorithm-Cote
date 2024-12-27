@@ -13,7 +13,6 @@ public class CanPartition {
     }
 
     /**
-     * TODO:记录
      * 结合494. 目标和{@link FindTargetSumWays#findTargetSumWays2(int[], int)}
      * 可知动态规划背包思想可以解决求解一组数据是否可以组合出指定解或组合出指定解的组合数量
      * @param nums

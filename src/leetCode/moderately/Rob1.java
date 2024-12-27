@@ -4,12 +4,12 @@ package leetCode.moderately;
  * @author: gj
  * @description: 198. 打家劫舍
  */
-public class Rob {
+public class Rob1 {
 
     public static void main(String[] args) {
         int[] nums = new int[]{1, 2, 3, 1};
         int[] nums2 = new int[]{2, 1, 1, 2};
-        System.out.println(new Rob().rob(nums2));
+        System.out.println(new Rob1().rob(nums2));
     }
 
     /**

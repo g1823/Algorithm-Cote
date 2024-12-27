@@ -11,7 +11,6 @@ import java.util.Stack;
 public class DailyTemperatures {
 
     /**
-     * TODO：记录
      * 单调栈
      * 常用于：在 O(n) 的时间复杂度内求出数组中各个元素右侧第一个更大的元素及其下标，然后一并得到其他信息。
      * 原理：维护一个单调递增或递减的栈，遍历一个新的元素时，判断栈内元素和新元素的大小关系（这里按照递减栈）
@@ -48,7 +47,6 @@ public class DailyTemperatures {
      * 根据官方题解优化dailyTemperatures
      */
     public int[] dailyTemperatures2(int[] temperatures) {
-        // TODO
         // Stack 类是同步的，基于 Vector，这种设计对大多数应用场景来说显得过于复杂，并且性能较差。
         // Deque 更加灵活，既可以作为栈使用（LIFO），也可以作为双端队列使用（FIFO），可以从两端添加或删除元素。而 Stack 则是严格的栈结构，功能上较为单一。
         Deque<Integer> stack = new LinkedList<Integer>();
@@ -62,11 +60,6 @@ public class DailyTemperatures {
             }
             stack.push(i);
         }
-        // 因为Java数组默认填0，所以不需要在最后给站内元素赋值0
-//        while (!stack.isEmpty()) {
-//            int[] pop = stack.pop();
-//            result[pop[1]] = 0;
-//        }
         return result;
     }
 
