@@ -6,6 +6,12 @@ package leetCode.moderately;
  */
 public class SearchMatrix {
     public static void main(String[] args) {
+        for (int i = 1; i <= 6; i++) {
+            for (int j = 1; j <= 3; j++) {
+                System.out.print("(" + i + "," + j + ") ");
+            }
+            System.out.println();
+        }
         int[][] matrix = new int[][]{
                 {1, 4, 7, 11, 15},
                 {2, 5, 8, 12, 19},
@@ -13,7 +19,13 @@ public class SearchMatrix {
                 {10, 13, 14, 17, 24},
                 {18, 21, 23, 26, 30}};
         int target = 5;
-        System.out.println(new SearchMatrix().searchMatrix(matrix, target));
+        int[][] matrix2 = new int[][]{{-1, 3}};
+        int target2 = -1;
+        int[][] matrix3 = new int[][]{{1, 3, 5, 7, 9}, {2, 4, 6, 8, 10}, {11, 13, 15, 17, 19}, {12, 14, 16, 18, 20}, {21, 22, 23, 24, 25}};
+        int target3 = 13;
+        int[][] matrix4 = new int[][]{{1, 2, 3, 4, 5}, {6, 7, 8, 9, 10}, {11, 12, 13, 14, 15}, {16, 17, 18, 19, 20}, {21, 22, 23, 24, 25}};
+        int target4 = 15;
+        //System.out.println(new SearchMatrix().searchMatrix(matrix4, target4));
     }
 
     public boolean searchMatrix(int[][] matrix, int target) {
@@ -22,9 +34,36 @@ public class SearchMatrix {
 
     public boolean test(int[] leftBorder, int[] rightBorder, int[][] matrix, int target) {
         int leftX = leftBorder[0], leftY = leftBorder[1], rightX = rightBorder[0], rightY = rightBorder[1];
+        if (leftX == rightX) {
+            int l = leftY, r = rightY;
+            while (l <= r) {
+                int mid = l + (r - l + 1) / 2;
+                int d = matrix[mid][leftX];
+                if (d > target) {
+                    r = mid - 1;
+                } else if (d < target) {
+                    l = mid + 1;
+                } else {
+                    return true;
+                }
+            }
+        }
+        if (leftY == rightY) {
+            int l = leftX, r = rightX;
+            while (l <= r) {
+                int mid = l + (r - l + 1) / 2;
+                int d = matrix[leftY][mid];
+                if (d > target) {
+                    r = mid - 1;
+                } else if (d < target) {
+                    l = mid + 1;
+                } else {
+                    return true;
+                }
+            }
+        }
         int n = Math.min(rightX - leftX, rightY - leftY);
         if (n <= 0) return false;
-        boolean result = false;
         SearchResult searchResult = searchTarget(matrix, leftX, leftY, n, target);
         if (searchResult.isFind) return true;
         int[] leftIndex = getLeftIndex(leftBorder, rightBorder);
@@ -64,9 +103,9 @@ public class SearchMatrix {
 
     public SearchResult searchTarget(int[][] matrix, int x, int y, int n, int target) {
         int l = 0, r = n;
-        while (l < r) {
-            int mid = l + (r - l) / 2;
-            int d = matrix[x + mid][y + mid];
+        while (l <= r && r <= n) {
+            int mid = l + (r - l + 1) / 2;
+            int d = matrix[y + mid][x + mid];
             if (d < target) {
                 l = mid + 1;
             } else if (d > target) {
