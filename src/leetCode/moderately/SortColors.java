@@ -5,6 +5,10 @@ package leetCode.moderately;
  * @description: 75. 颜色分类
  */
 public class SortColors {
+    /**
+     * 记录每个颜色的个数，但是会遍历两次
+     * @param nums
+     */
     public void sortColors(int[] nums) {
         int zeroNum = 0, oneNum = 0, twoNum = 0;
         for (int i = 0; i < nums.length; i++) {
@@ -29,4 +33,10 @@ public class SortColors {
             }
         }
     }
+
+    // TODO
+    public void sortColors2(int[] nums) {
+
+    }
+
 }

@@ -49,6 +49,7 @@ public class CountSubstrings {
         return count;
     }
 
+    //TODO
     public int countSubstrings2(String s) {
         int count = 0, n = s.length();
         if (n == 0) return 0;
