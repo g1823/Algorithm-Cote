@@ -1,7 +1,7 @@
 package leetCode.moderately;
 
 /**
- * @author: gj TODO
+ * @author: gj
  * @description: 240. 搜索二维矩阵 II
  */
 public class SearchMatrix {
@@ -28,6 +28,9 @@ public class SearchMatrix {
         //System.out.println(new SearchMatrix().searchMatrix(matrix4, target4));
     }
 
+    /**
+     * 错误
+     */
     public boolean searchMatrix(int[][] matrix, int target) {
         return test(new int[]{0, 0}, new int[]{matrix[0].length - 1, matrix.length - 1}, matrix, target);
     }
@@ -127,5 +130,39 @@ public class SearchMatrix {
         boolean isFind;
         int x;
         int y;
+    }
+
+    /**
+     * 思路：
+     * 根据矩阵的性质，从左到右递增，从上到下递增。
+     * 如果正常遍历，会遇到一个问题，比如
+     * - 坐标 matrix(i,j) < target，那么即可以向右走，又可以向下走，无法直接过滤当前行或当前列
+     * - 坐标 matrix(i,j) > target，那么即可以向上走，又可以向左走，无法直接过滤当前行或当前列
+     * 改变思路，从右上角开始遍历：
+     * - 如果当前元素小于目标元素，因为当前行所有未被过滤的元素都小于当前元素，而当前元素小于目标元素，则当前行所有元素均小于目标元素。可以过滤掉当前行，则只能取下一行。
+     * - 如果当前元素大于目标元素，因为从右上角往左下角遍历，而当前元素上方的元素已经被直接过滤，当前元素下方的元素都大于当前元素，因此只可以过滤掉当前列，只能能取上一列。
+     * 这样，一次过滤一行或一列，直到找到目标元素或者遍历完所有元素。
+     * 换个说法，从右上角 (0, n-1) 开始搜索
+     * 每次比较当前元素和目标值 target：
+     * - 若 matrix[i][j] == target，返回 true
+     * - 若 matrix[i][j] < target，由于当前列下面的元素可能更大，所以向下移动 i++
+     * - 若 matrix[i][j] > target，由于当前行左边的元素可能更小，所以向左移动 j--
+     * 每次移动都可以排除一行或一列，时间复杂度 O(m + n)
+     */
+    public boolean searchMatrix2(int[][] matrix, int target) {
+        // 从右上角开始
+        int i = 0, j = matrix[0].length - 1;
+        while (i < matrix.length && j >= 0) {
+            if (matrix[i][j] == target) {
+                return true;
+            } else if (matrix[i][j] < target) {
+                // 当前元素小于目标元素，则只能取下一行
+                i++;
+            } else {
+                // 当前元素大于目标元素，则只能取上一列
+                j--;
+            }
+        }
+        return false;
     }
 }

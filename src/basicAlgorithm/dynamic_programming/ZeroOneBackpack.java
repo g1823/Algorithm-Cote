@@ -1,5 +1,8 @@
 package basicAlgorithm.dynamic_programming;
 
+
+import basicAlgorithm.dynamic_programming.help.Item;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -77,26 +80,3 @@ public class ZeroOneBackpack {
 
 }
 
-class Item {
-    /**
-     * 体积
-     */
-    int volume;
-    /**
-     * 价值
-     */
-    int value;
-
-    public Item(int volume, int value) {
-        this.volume = volume;
-        this.value = value;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    public int getVolume() {
-        return volume;
-    }
-}
