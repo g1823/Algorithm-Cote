@@ -9,17 +9,6 @@ import leetCode.help.TreeNode;
 public class MaxPathSum {
 
     public static void main(String[] args) {
-
-        String s = "A02029900";
-        boolean result = false;
-        if("A01000000".compareTo(s) <= 0 && "A03010000".compareTo(s) > 0){
-            result = true;
-        }
-        if("A03030000".compareTo(s) <= 0 && "A07000000".compareTo(s) > 0){
-            result = true;
-        }
-
-        System.out.println(result);
         TreeNode root = new TreeNode(5);
         TreeNode node1 = new TreeNode(4);
         TreeNode node2 = new TreeNode(8);

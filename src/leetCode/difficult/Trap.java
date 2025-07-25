@@ -163,14 +163,35 @@ public class Trap {
 
 
     /**
-     * 双指针:
-     * trap2()动态规划中，对每个下标求得其左侧和右侧的最大值，导致需要O(n)的空间复杂度存储这些信息，能否优化？
-     * 考虑到本题目的特殊性，每个下标存储的最大水量取决于Min(Max(left),Max(right))，即左侧和右侧最大值中较小的一个。
-     * 我们只要可以明确当前下标的左侧最大值小于右侧值（不一定是右侧最大值）即可，因为上限此时由左侧决定，右侧最大值不会影响结果。
-     * 反之，右侧同理。
-     * 因此，我们可以使用left和right两个指针指向当前位置，leftMax和rightMax记录左侧目前的最大值和右侧目前的最大值。
-     * left=0,right=n-1,leftMax=0,rightMax=0;
-     * 然后比较左侧和右侧元素大小，当height[left]<height[right]时，此时说明左侧一定小于右侧，那么左侧也一定小于
+     * 双指针法：
+     * 动态规划 trap2() 中，为每个下标预处理其左侧最大值和右侧最大值，虽然时间复杂度是 O(n)，
+     * 但需要 O(n) 的额外空间。考虑能否在不牺牲时间复杂度的前提下，将空间优化到 O(1)？
+     * 本题的核心是：每个位置的最大接水量由以下公式决定：
+     * min(maxLeft, maxRight) - height[i]
+     * 即当前位置的“水位高度”由其左右两侧最高柱子中较矮的一侧决定。
+     * 关键思路：
+     * - 若当前 height[left] < height[right]，说明左侧高度更低，无论右侧有多高，
+     * 此时决定水位的瓶颈一定在左侧，所以可以安全地使用 leftMax 进行接水计算。
+     * - 若 height[right] <= height[left]，同理，右侧更低，瓶颈在右侧，安全使用 rightMax。
+     * ✅ 实际关键在于：每次进入某一侧（left 或 right）的分支时，能保证这一侧对应柱子高度
+     * 一定是当前两侧中较矮的，另一侧不可能成为当前水位的短板。
+     * 否则程序逻辑就会转向处理对侧，因此判断是可靠的。
+     * 实现方式：
+     * - 使用两个指针 left 和 right 从两端向中间收缩；
+     * - 使用 leftMax 和 rightMax 记录扫描过程中当前左侧/右侧的最大高度；
+     * - 每次比较 height[left] 与 height[right]：
+     * - 若 height[left] < height[right]：
+     * → 说明瓶颈在左侧，水位由 leftMax 决定；
+     * → 若 height[left] < leftMax，则接水量为 leftMax - height[left]；
+     * → 否则更新 leftMax；
+     * → 左指针右移；
+     * - 否则：
+     * → 说明瓶颈在右侧，水位由 rightMax 决定；
+     * → 若 height[right] < rightMax，则接水量为 rightMax - height[right]；
+     * → 否则更新 rightMax；
+     * → 右指针左移；
+     * 时间复杂度：O(n)
+     * 空间复杂度：O(1)
      */
     public int trap4(int[] height) {
         int n = height.length;
@@ -178,6 +199,24 @@ public class Trap {
             return 0;
         }
         int result = 0;
+        int left = 0, right = n - 1, leftMax = 0, rightMax = 0;
+        while (left < right) {
+            if (height[left] < height[right]) {
+                if (height[left] < leftMax) {
+                    result += leftMax - height[left];
+                } else {
+                    leftMax = height[left];
+                }
+                left++;
+            }else{
+                if (height[right] < rightMax) {
+                    result += rightMax - height[right];
+                } else {
+                    rightMax = height[right];
+                }
+                right--;
+            }
+        }
         return result;
     }
 }

@@ -18,25 +18,43 @@ public class MaximalSquare {
         System.out.println(maximalSquare.maximalSquare2(data3));
     }
 
+    /**
+     * 计算由 '1' 组成的最大正方形的面积。
+     * 方法思路：
+     * - 从每一行出发，依次尝试从当前位置向左连续的 '1' 数量构成的最大边长 size；
+     * - 如果 size > 1，就进一步调用 verifySquare 方法验证该正方形是否有效；
+     * - 若有效，更新 maxSize，否则回退起始位置；
+     */
     public int maximalSquare(char[][] matrix) {
+        // 当前发现的最大正方形边长
         int maxSize = 0;
+
         for (int i = 0; i < matrix.length; i++) {
+            // 当前连续 '1' 的数量
             int size = 0;
             for (int j = 0; j < matrix[i].length; ) {
                 if (matrix[i][j] == '1') {
+                    // 至少能构成 1x1 正方形
                     maxSize = Math.max(maxSize, 1);
                     if (++size > 1 && size > maxSize) {
+                        // 连续 '1' 增长后大于当前 maxSize，尝试验证更大正方形
+                        // 从当前行 i，列 j - size + 1 开始验证 size * size 区域是否合法
                         if (verifySquare(matrix, size, i, j - size + 1)) {
+                            // 验证通过则更新 maxSize
                             maxSize = Math.max(maxSize, size);
                             j++;
                         } else {
+                            // 若验证失败，从下一个可能的起始位置重新开始
                             j = j == matrix[i].length - 1 ? j + 1 : j - size + 2;
+                            // 重置连续 '1' 计数
                             size = 0;
                         }
                     } else {
+                        // size <= 1 或未超过 maxSize，继续探索
                         j++;
                     }
                 } else {
+                    // 当前不是 '1'，跳过
                     j++;
                     size = 0;
                 }
@@ -45,15 +63,25 @@ public class MaximalSquare {
         return maxSize * maxSize;
     }
 
+    /**
+     * 验证以 matrix[row][col] 为左上角的 size x size 区域是否全为 '1'
+     */
     public boolean verifySquare(char[][] matrix, int size, int row, int col) {
         if (row + size > matrix.length) {
+            // 越界了，不可能构成正方形
             return false;
         }
+
+        // 从 row+1 行开始，遍历 size 行 size 列区域
         for (int i = row + 1; i < row + size; i++) {
             for (int j = col; j < col + size; j++) {
-                if (matrix[i][j] != '1') return false;
+                if (matrix[i][j] != '1') {
+                    // 出现 '0'，验证失败
+                    return false;
+                }
             }
         }
+        // 全部为 '1'，验证通过
         return true;
     }
 
@@ -93,8 +121,6 @@ public class MaximalSquare {
     /**
      * 官方DP
      *
-     * @param matrix
-     * @return
      */
     public int maximalSquare3(char[][] matrix) {
         int maxSide = 0;
