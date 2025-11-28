@@ -6,11 +6,11 @@ import leetCode.help.TreeNode;
  * @author: gj
  * @description: 105. 从前序与中序遍历序列构造二叉树
  */
-public class BuildTree {
+public class BuildTreeByFrontMid {
     public static void main(String[] args) {
         int[] preorder = new int[]{3, 9, 20, 15, 7};
         int[] inorder = new int[]{9, 3, 15, 20, 7};
-        System.out.println(new BuildTree().buildTree(preorder, inorder));
+        System.out.println(new BuildTreeByFrontMid().buildTree(preorder, inorder));
     }
 
 

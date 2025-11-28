@@ -24,10 +24,6 @@ public class CalcEquation {
     /**
      * 记录每个除数，被除数计算出来的值。构造出一棵树
      * 然后使用dfs计算结果
-     * @param equations
-     * @param values
-     * @param queries
-     * @return
      */
     public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
         Map<String, Map<String, Double>> varMap = new HashMap<>();
@@ -98,8 +94,8 @@ public class CalcEquation {
 
 
     /**
-     * TODO: 未完成
-     * 并查集 TODO：取leetCode查看该题，该题官方题解下有很多并查集的链接题目
+     * TODO: 未完成 取leetCode查看该题，该题官方题解下有很多并查集的链接题目
+     * 并查集
      * 上面解法实际上已经采用了并查集的部分思想，将能够以x为被除数的所有算数全部放到同一个key下
      *
      */

@@ -46,13 +46,16 @@ public class IsSymmetric {
      */
     public boolean bfs(List<TreeNode> nodeList) {
         int length = nodeList.size();
-        for (int l = 0, r = length - 1; l != r && l < length && r > 0; l++, r--) {
+        // 判断本层元素是否对称，优化，除了根节点外，其他层一定是偶数个
+        // for (int l = 0, r = length - 1; l != r && l < length && r > 0; l++, r--) {
+        for (int l = 0, r = length - 1; l < r; l++, r--) {
             TreeNode leftNode = nodeList.get(l);
             TreeNode rightNode = nodeList.get(r);
             if (leftNode == null && rightNode == null) continue;
             if (leftNode == null || rightNode == null) return false;
             if (leftNode.val != rightNode.val) return false;
         }
+
         List<TreeNode> newNodeList = new ArrayList<>();
         boolean allIsNull = true;
         for (int i = 0; i < length; i++) {
@@ -72,16 +75,13 @@ public class IsSymmetric {
 
 
     /**
-     * TODO：需要继续理解
      * 分治：
      * 如果一个树的左子树与右子树镜像对称，那么这个树是对称的。
      * 如果同时满足下面的条件，两个树互为镜像：
-     *  它们的两个根结点具有相同的值
-     *  每个树的右子树都与另一个树的左子树镜像对称
+     * 它们的两个根结点具有相同的值
+     * 每个树的右子树都与另一个树的左子树镜像对称
      * 通过「同步移动」两个指针的方法来遍历这棵树，p 指针和 q 指针一开始都指向这棵树的根，随后 p 右移时，q 左移，p 左移时，q 右移。
      * 每次检查当前 p 和 q 节点的值是否相等，如果相等再判断左右子树是否对称。
-     * @param root 根节点
-     * @return 是否对称
      */
     public boolean isSymmetric2(TreeNode root) {
         return check(root, root);

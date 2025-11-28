@@ -90,7 +90,6 @@ public class CountBits {
     public int[] countBits3(int n) {
         int[] bits = new int[n + 1];
         for (int i = 1; i <= n; i++) {
-            // TODO:是否能被2整除、以及除二
             bits[i] = bits[i >> 1] + (i & 1);
         }
         return bits;
@@ -98,10 +97,10 @@ public class CountBits {
 
     /**
      * 动态规划——最低设置位
-     *  定义正整数 x 的「最低设置位」为 x 的二进制表示中的最低的 1 所在位。
-     *  例如，10 的二进制表示是 1010(2)，其最低设置位为 2，对应的二进制表示是 10(2)。
-     *  令 y=x&(x−1)，则 y 为将 x 的最低设置位从 1 变成 0 之后的数，显然 0≤y<x，bits[x]=bits[y]+1。
-     *  因此对任意正整数 x，都有 bits[x]=bits[x&(x−1)]+1。
+     * 定义正整数 x 的「最低设置位」为 x 的二进制表示中的最低的 1 所在位。
+     * 例如，10 的二进制表示是 1010(2)，其最低设置位为 2，对应的二进制表示是 10(2)。
+     * 令 y=x&(x−1)，则 y 为将 x 的最低设置位从 1 变成 0 之后的数，显然 0≤y<x，bits[x]=bits[y]+1。
+     * 因此对任意正整数 x，都有 bits[x]=bits[x&(x−1)]+1。
      *
      * @param n
      * @return
