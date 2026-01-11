@@ -21,6 +21,7 @@ public class MaximalRectangle {
     /**
      * 思路：
      * 记录每个坐标向上最高高度，这样就可以将每一行转为柱状图，可以采用柱状图求最大矩形的代码了
+     * 问题被转换为了求柱形图中的最大矩形了{@link leetCode.difficult.LargestRectangleArea}
      */
     public int maximalRectangle(char[][] matrix) {
         // 1、记录每个坐标向上最高的高度
@@ -30,9 +31,6 @@ public class MaximalRectangle {
                 heights[i][j] = matrix[i][j] == '1' ? (i == 0 ? 1 : heights[i - 1][j] + 1) : 0;
             }
         }
-        /**
-         * 问题被转换为了求柱形图中的最大矩形了{@link leetCode.difficult.LargestRectangleArea}
-         */
         int max = 0;
         for (int i = 0; i < heights.length; i++) {
             int[] height = heights[i];
