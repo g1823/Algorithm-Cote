@@ -1,5 +1,8 @@
 package leetCode.moderately;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author: gj
  * @description: 3453. 分割正方形 I
@@ -104,5 +107,83 @@ public class SeparateSquares {
             }
         }
         return sum;
+    }
+
+
+    /**
+     * 使用扫描线优化：{@link leetCode.difficult.SeparateSquares.Solution1}
+     * 由于其可以重复计算重叠面积，那么就简单多了吧。
+     * 计算宽度时，不需要使用集合记录x区间了，直接一个int记录即可，正方形进入则加其边长，离开则减其边长。
+     * 这样O(n)时间复杂度计算出总面积以及每个事件的Y前缀和面积以及每个区间宽度。
+     * 然后由于每个事件的Y前缀和是非递减的，可以二分查找取到中间区间，然后O(1)计算最终y，但是需要排序，因此复杂度应该是nLog(n)
+     */
+    public static class Solution {
+
+        static class Event {
+            int y;
+            int delta;
+            Event(int y, int delta) {
+                this.y = y;
+                this.delta = delta;
+            }
+        }
+
+        public double separateSquares(int[][] squares) {
+            int n = squares.length;
+            // 1. 构造 y 事件
+            List<Event> events = new ArrayList<>();
+            for (int[] s : squares) {
+                int y = s[1];
+                int len = s[2];
+                // 正方形进入和离开
+                events.add(new Event(y, +len));
+                events.add(new Event(y + len, -len));
+            }
+            // 2. 按 y 排序
+            events.sort((a, b) -> Integer.compare(a.y, b.y));
+
+            int m = events.size();
+            double[] prefixArea = new double[m];
+            int[] ys = new int[m];
+            double curWidth = 0;
+            double areaSum = 0;
+            // 3. 扫描线计算前缀面积
+            for (int i = 0; i < m; i++) {
+                Event e = events.get(i);
+                ys[i] = e.y;
+                if (i > 0) {
+                    double dy = ys[i] - ys[i - 1];
+                    if (dy > 0 && curWidth > 0) {
+                        areaSum += curWidth * dy;
+                    }
+                }
+                prefixArea[i] = areaSum;
+                curWidth += e.delta;
+            }
+            double half = areaSum / 2.0;
+            // 4. 二分查找所在区间
+            int l = 0, r = m - 1;
+            while (l < r) {
+                int mid = (l + r) >>> 1;
+                if (prefixArea[mid] < half) {
+                    l = mid + 1;
+                } else {
+                    r = mid;
+                }
+            }
+            // 5. 在区间内 O(1) 回推 y
+            // prefixArea[l - 1] < half <= prefixArea[l]
+            if (l == 0) {
+                return ys[0];
+            }
+            double prevArea = prefixArea[l - 1];
+            double remain = half - prevArea;
+            // 重新计算该区间的 width（事件处理顺序与扫描线一致）
+            double width = 0;
+            for (int i = 0; i < l; i++) {
+                width += events.get(i).delta;
+            }
+            return ys[l - 1] + remain / width;
+        }
     }
 }
