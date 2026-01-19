@@ -17,6 +17,7 @@ public class SeparateSquares {
         return 0;
     }
 
+
     /**
      * 扫描线
      * - 一、问题对比与整体可行性分析
@@ -155,6 +156,7 @@ public class SeparateSquares {
             }
         }
 
+
         public double separateSquares(int[][] squares) {
             // 生成事件
             List<Event> events = new ArrayList<>();
@@ -251,5 +253,451 @@ public class SeparateSquares {
     }
 
 
-    public static class Solution2 {}
+    /**
+     * 尝试采用线段树优化获取宽度逻辑
+     * 当前尝试错误：
+     * 1、这个并非传统线段树，因为重叠部分只能计算一次
+     * 2、构建线段节点时，区间构建错误，当前采用的区间为真实的x区间，实际上应该使用区间端点数组的index。
+     * - 一般工程上，都会采用index，而非data[index]作为边界，因为index的值更稳定，而data[index]的值范围可能差异很大
+     * - 如果node存的是data[index],那么在查询l,r时，递归取中间值mid时，mid = (l + r) / 2 ,可能并不是一个真实的端点(即端点列表里不存在该端点值)，而采用index则不会有这个问题。
+     * - node存储data[index]时，递归时还需要处理浮点精度的问题
+     * - 懒标记也会变得不容易做
+     * - 无法利用完全二叉树的性质，将真正的树使用数组表示进行优化了。
+     */
+    public static class Solution2 {
+
+        /**
+         * 事件类
+         */
+        static class Event {
+            // 事件发生的坐标
+            public int y;
+            // l: 区间左端点， r: 区间右端点
+            public int l, r;
+            // true：正方形进入，false：正方形离开
+            public boolean isStart;
+
+            Event(int y, int l, int r, boolean isStart) {
+                this.y = y;
+                this.l = l;
+                this.r = r;
+                this.isStart = isStart;
+            }
+
+            @Override
+            public String toString() {
+                return "y=" + y + ", 区间={" + l + ", " + r + "}, isStart=" + isStart;
+            }
+        }
+
+        static class SegmentTree {
+            static class Node {
+                // l: 区间左端点， r: 区间右端点
+                public int l, r;
+                // value: 区间值，lazy: 区间懒标记，带向下推的值
+                public int value, lazy;
+                // left: 左子树， right: 右子树
+                public Node left, right;
+
+                public Node(int l, int r) {
+                    this.l = l;
+                    this.r = r;
+                }
+            }
+
+            Node root;
+
+            /**
+             * 线段树构造函数
+             *
+             * @param nums:所有x区间的可能端点
+             */
+            public SegmentTree(Set<Integer> nums) {
+                int[] numsArray = new int[nums.size()];
+                int i = 0;
+                for (Integer num : nums) {
+                    numsArray[i++] = num;
+                }
+                Arrays.sort(numsArray);
+                this.root = build(numsArray, 0, numsArray.length - 1);
+            }
+
+            private Node build(int[] nums, int l, int r) {
+                if (l > r) {
+                    return null;
+                }
+                Node node = new Node(nums[l], nums[r]);
+                if (l == r) {
+                    return node;
+                }
+                int mid = l + r >> 1;
+                node.left = build(nums, l, mid);
+                node.right = build(nums, mid + 1, r);
+                return node;
+            }
+
+
+            public void update(int l, int r, int value) {
+                if (l > r || l > root.r || r < root.l) {
+                    return;
+                }
+                update(root, l, r, value);
+            }
+
+            private void update(Node node, int l, int r, int value) {
+                // 当前节点不在区间内
+                if (node == null || node.r < l || node.l > r) {
+                    return;
+                }
+                // 当前节点全部在区间内
+                if (node.l >= l && node.r <= r) {
+                    // 懒标记
+                    node.lazy += value;
+                    // 首先，lazy在当前题目的语境下最小为0，因为正方形移入移出最终只会导入贡献的区间值 = 0
+                    node.value += value * (node.r - node.l + 1);
+                    return;
+                }
+                // 当前节点部分在区间内
+                // 1、先将当前节点的懒标记值下推
+                pushDown(node);
+                // 2、计算左右子树值
+                update(node.left, l, r, value);
+                update(node.right, l, r, value);
+                // 3、根据左右子树值更新当前节点区间值
+                int leftVal = node.left == null ? 0 : node.left.value;
+                int rightVal = node.right == null ? 0 : node.right.value;
+                node.value = leftVal + rightVal;
+            }
+
+            private void pushDown(Node node) {
+                if (node == null || node.lazy == 0) {
+                    return;
+                }
+
+                Node left = node.left;
+                // 左树不为空，下推左树
+                if (left != null) {
+                    left.lazy += node.lazy;
+                    // 更新左树区间合，注意，由于加法满足交换律和结合律（线性性质），可以对区间值每次计算当前更新的累计值
+                    // 即：如果对区间每个元素加 x，则新区间和 = 原区间和 + (区间长度 × x)
+                    left.value += node.lazy * (left.r - left.l + 1);
+                }
+                Node right = node.right;
+                // 右树不为空，下推左树
+                if (right != null) {
+                    right.lazy += node.lazy;
+                    right.value += node.lazy * (right.r - right.l + 1);
+                }
+                // 清空当前懒标记值
+                node.lazy = 0;
+            }
+
+            public int query(int l, int r) {
+                if (l > r || l > root.r || r < root.l) {
+                    return 0;
+                }
+                return query(root, l, r);
+            }
+
+            private int query(Node node, int l, int r) {
+                // 当前节点不在区间内
+                if (node == null || node.r < l || node.l > r) {
+                    return 0;
+                }
+                // 当前节点全部在区间内
+                if (node.l >= l && node.r <= r) {
+                    return node.value;
+                }
+                // 当前节点部分在区间内
+                pushDown(node);
+                int leftVal = query(node.left, l, r);
+                int rightVal = query(node.right, l, r);
+                return leftVal + rightVal;
+            }
+        }
+
+        public double separateSquares(int[][] squares) {
+            // 生成事件和所有的x点
+            List<Event> events = new ArrayList<>();
+            Set<Integer> xPoints = new HashSet<>();
+            for (int[] square : squares) {
+                int x1 = square[0], y1 = square[1], len = square[2];
+                events.add(new Event(y1, x1, x1 + len, true));
+                events.add(new Event(y1 + len, x1, x1 + len, false));
+                xPoints.add(x1);
+                xPoints.add(x1 + len);
+            }
+            // 按y排序事件
+            events.sort(Comparator.comparingInt(e -> e.y));
+            // 创建线段树
+            SegmentTree segmentTree = new SegmentTree(xPoints);
+            // key - > 事件下标, value - > 事件面积前缀和
+            Map<Integer, Double> areaMap = new HashMap<>();
+            // key - > 事件下标, value - > 事件宽度前缀和
+            Map<Integer, Double> widthMap = new HashMap<>();
+            double totalArea = getTotalArea(events, segmentTree, areaMap, widthMap);
+            int i = 0;
+            double target = totalArea / 2;
+            while (i < events.size() - 1) {
+                double area = areaMap.get(i);
+                double nextArea = areaMap.get(i + 1);
+                if (Math.abs(area - target) < 1e-5) {
+                    return events.get(i).y;
+                }
+                if (target >= area && target < nextArea) {
+                    break;
+                }
+                i++;
+            }
+            // 新的目标面积
+            target = target - areaMap.get(i);
+            double width = widthMap.get(i);
+            double height = (target) / width;
+            return height + events.get(i).y;
+        }
+
+        private double getTotalArea(List<Event> events, SegmentTree segmentTree, Map<Integer, Double> areaMap, Map<Integer, Double> widthMap) {
+            double totalArea = 0;
+            // 第一个事件肯定为正方形进入事件，此时还未有任何面积计入，初始化为0
+            areaMap.put(0, 0d);
+            for (int i = 1; i < events.size(); i++) {
+                Event event = events.get(i);
+                int height = event.y - events.get(i - 1).y;
+                if (event.isStart) {
+                    // 查询宽度
+                    int width = segmentTree.query(segmentTree.root.l, segmentTree.root.r);
+                    totalArea += width * height;
+                    widthMap.put(i - 1, width * 1.0);
+                }
+                // 正方形进入事件
+                if (event.isStart) {
+                    segmentTree.update(event.l, event.r, 1);
+                }
+                // 正方形离开事件
+                else {
+                    segmentTree.update(event.l, event.r, -1);
+                }
+                areaMap.put(i, totalArea);
+            }
+            return totalArea;
+        }
+    }
+
+    public static class Solution3 {
+
+        /**
+         * 事件类
+         */
+        static class Event {
+            // 事件发生的坐标
+            public int y;
+            // l: 区间左端点， r: 区间右端点
+            public int l, r;
+            // true：正方形进入，false：正方形离开
+            public boolean isStart;
+
+            Event(int y, int l, int r, boolean isStart) {
+                this.y = y;
+                this.l = l;
+                this.r = r;
+                this.isStart = isStart;
+            }
+
+            @Override
+            public String toString() {
+                return "y=" + y + ", 区间={" + l + ", " + r + "}, isStart=" + isStart;
+            }
+        }
+
+        static class SegmentTree {
+            static class Node {
+                // l: 区间左端点， r: 区间右端点
+                public int l, r;
+                // value: 区间值，lazy: 区间懒标记，带向下推的值
+                public int value, lazy;
+                // left: 左子树， right: 右子树
+                public Node left, right;
+
+                public Node(int l, int r) {
+                    this.l = l;
+                    this.r = r;
+                }
+            }
+
+            Node root;
+
+            /**
+             * 线段树构造函数
+             *
+             * @param nums:所有x区间的可能端点
+             */
+            public SegmentTree(Set<Integer> nums) {
+                int[] numsArray = new int[nums.size()];
+                int i = 0;
+                for (Integer num : nums) {
+                    numsArray[i++] = num;
+                }
+                Arrays.sort(numsArray);
+                this.root = build(numsArray, 0, numsArray.length - 1);
+            }
+
+            private Node build(int[] nums, int l, int r) {
+                // 需要形成区间，因此不存在l == r
+                if (l + 1 > r) {
+                    return null;
+                }
+                Node node = new Node(nums[l], nums[r]);
+                int mid = l + r >> 1;
+                node.left = build(nums, l, mid);
+                node.right = build(nums, mid + 1, r);
+                return node;
+            }
+
+
+            public void update(int l, int r, int value) {
+                if (l > r || l > root.r || r < root.l) {
+                    return;
+                }
+                update(root, l, r, value);
+            }
+
+            private void update(Node node, int l, int r, int value) {
+                // 当前节点不在区间内
+                if (node == null || node.r < l || node.l > r) {
+                    return;
+                }
+                // 当前节点全部在区间内
+                if (node.l >= l && node.r <= r) {
+                    // 懒标记
+                    node.lazy += value;
+                    // 首先，lazy在当前题目的语境下最小为0，因为正方形移入移出最终只会导入贡献的区间值 = 0
+                    node.value += value * (node.r - node.l + 1);
+                    return;
+                }
+                // 当前节点部分在区间内
+                // 1、先将当前节点的懒标记值下推
+                pushDown(node);
+                // 2、计算左右子树值
+                update(node.left, l, r, value);
+                update(node.right, l, r, value);
+                // 3、根据左右子树值更新当前节点区间值
+                int leftVal = node.left == null ? 0 : node.left.value;
+                int rightVal = node.right == null ? 0 : node.right.value;
+                node.value = leftVal + rightVal;
+            }
+
+            private void pushDown(Node node) {
+                if (node == null || node.lazy == 0) {
+                    return;
+                }
+
+                Node left = node.left;
+                // 左树不为空，下推左树
+                if (left != null) {
+                    left.lazy += node.lazy;
+                    // 更新左树区间合，注意，由于加法满足交换律和结合律（线性性质），可以对区间值每次计算当前更新的累计值
+                    // 即：如果对区间每个元素加 x，则新区间和 = 原区间和 + (区间长度 × x)
+                    left.value += node.lazy * (left.r - left.l + 1);
+                }
+                Node right = node.right;
+                // 右树不为空，下推左树
+                if (right != null) {
+                    right.lazy += node.lazy;
+                    right.value += node.lazy * (right.r - right.l + 1);
+                }
+                // 清空当前懒标记值
+                node.lazy = 0;
+            }
+
+            public int query(int l, int r) {
+                if (l > r || l > root.r || r < root.l) {
+                    return 0;
+                }
+                return query(root, l, r);
+            }
+
+            private int query(Node node, int l, int r) {
+                // 当前节点不在区间内
+                if (node == null || node.r < l || node.l > r) {
+                    return 0;
+                }
+                // 当前节点全部在区间内
+                if (node.l >= l && node.r <= r) {
+                    return node.value;
+                }
+                // 当前节点部分在区间内
+                pushDown(node);
+                int leftVal = query(node.left, l, r);
+                int rightVal = query(node.right, l, r);
+                return leftVal + rightVal;
+            }
+        }
+
+        public double separateSquares(int[][] squares) {
+            // 生成事件和所有的x点
+            List<Event> events = new ArrayList<>();
+            Set<Integer> xPoints = new HashSet<>();
+            for (int[] square : squares) {
+                int x1 = square[0], y1 = square[1], len = square[2];
+                events.add(new Event(y1, x1, x1 + len, true));
+                events.add(new Event(y1 + len, x1, x1 + len, false));
+                xPoints.add(x1);
+                xPoints.add(x1 + len);
+            }
+            // 按y排序事件
+            events.sort(Comparator.comparingInt(e -> e.y));
+            // 创建线段树
+            SegmentTree segmentTree = new SegmentTree(xPoints);
+            // key - > 事件下标, value - > 事件面积前缀和
+            Map<Integer, Double> areaMap = new HashMap<>();
+            // key - > 事件下标, value - > 事件宽度前缀和
+            Map<Integer, Double> widthMap = new HashMap<>();
+            double totalArea = getTotalArea(events, segmentTree, areaMap, widthMap);
+            int i = 0;
+            double target = totalArea / 2;
+            while (i < events.size() - 1) {
+                double area = areaMap.get(i);
+                double nextArea = areaMap.get(i + 1);
+                if (Math.abs(area - target) < 1e-5) {
+                    return events.get(i).y;
+                }
+                if (target >= area && target < nextArea) {
+                    break;
+                }
+                i++;
+            }
+            // 新的目标面积
+            target = target - areaMap.get(i);
+            double width = widthMap.get(i);
+            double height = (target) / width;
+            return height + events.get(i).y;
+        }
+
+        private double getTotalArea(List<Event> events, SegmentTree segmentTree, Map<Integer, Double> areaMap, Map<Integer, Double> widthMap) {
+            double totalArea = 0;
+            // 第一个事件肯定为正方形进入事件，此时还未有任何面积计入，初始化为0
+            areaMap.put(0, 0d);
+            for (int i = 1; i < events.size(); i++) {
+                Event event = events.get(i);
+                int height = event.y - events.get(i - 1).y;
+                if (event.isStart) {
+                    // 查询宽度
+                    int width = segmentTree.query(segmentTree.root.l, segmentTree.root.r);
+                    totalArea += width * height;
+                    widthMap.put(i - 1, width * 1.0);
+                }
+                // 正方形进入事件
+                if (event.isStart) {
+                    segmentTree.update(event.l, event.r, 1);
+                }
+                // 正方形离开事件
+                else {
+                    segmentTree.update(event.l, event.r, -1);
+                }
+                areaMap.put(i, totalArea);
+            }
+            return totalArea;
+        }
+    }
+
 }
