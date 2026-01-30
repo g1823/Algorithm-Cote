@@ -22,7 +22,9 @@ public class CalcEquation {
     }
 
     /**
-     * 记录每个除数，被除数计算出来的值。构造出一棵树
+     * 将每个表达式都记录出来，形成节点图：比如a/b=2，那么得到 a->b=2，b->a=0.5。
+     * 然后要求a/c，那么存在key为a的节点，则求a/c的值，若节点a没有c子节点，存在d,e子节点。
+     * 那么则a/c = a/d * d/c，进而转换为a/d 的值 * d/c，即递归获取d/c的值
      * 然后使用dfs计算结果
      */
     public double[] calcEquation(List<List<String>> equations, double[] values, List<List<String>> queries) {
@@ -97,9 +99,8 @@ public class CalcEquation {
      * TODO: 未完成 取leetCode查看该题，该题官方题解下有很多并查集的链接题目
      * 并查集
      * 上面解法实际上已经采用了并查集的部分思想，将能够以x为被除数的所有算数全部放到同一个key下
-     *
      */
-    public double[] calcEquation2(List<List<String>> equations, double[] values, List<List<String>> queries){
+    public double[] calcEquation2(List<List<String>> equations, double[] values, List<List<String>> queries) {
         return null;
     }
 

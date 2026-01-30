@@ -33,6 +33,12 @@ public class LowestCommonAncestor {
         System.out.println(result);
     }
 
+    /**
+     * 直接深度优先遍历：
+     * - 使用result记录最终结果，若result不为空，说明已经找到，直接退出
+     * - 当result为空时，且左子树或右子树中分别有一个待寻找节点，则将当前节点加入结果中，并返回true
+     * - 当result为空时，且左子树或右子树中只有一个待寻找节点，然后当前节点等于另一个待寻找节点，则将当前节点加入结果中
+     */
     public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
         List<TreeNode> result = new ArrayList<>();
         dfs(root, p, q, result);
@@ -40,8 +46,12 @@ public class LowestCommonAncestor {
     }
 
     public boolean dfs(TreeNode node, TreeNode p, TreeNode q, List<TreeNode> result) {
-        if (node == null) return false;
-        if (!result.isEmpty()) return true;
+        if (node == null) {
+            return false;
+        }
+        if (!result.isEmpty()) {
+            return true;
+        }
         boolean left = dfs(node.left, p, q, result);
         boolean right = dfs(node.right, p, q, result);
         // 当还未找到公共父节点 && [左子树和右子树分别含有一个待寻找节点 或 当前节点等于待寻找节点且左子树或右子树已经找到另一个节点]
