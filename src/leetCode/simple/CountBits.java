@@ -8,6 +8,29 @@ package leetCode.simple;
  */
 public class CountBits {
     /**
+     * - 思路分析：
+     * - 目标是计算从 0 到 n 的每个整数，其二进制表示中 1 的个数。
+     * - 一开始可以通过列举发现规律：
+     * - - 将整数写成二进制后，相邻数字之间并不是完全无关的
+     * - - 对任意整数 i：
+     * -      i / 2 等价于二进制右移一位
+     * -      i % 2 等价于判断最低位是否为 1
+     * - 因此可以得到一个递推关系：
+     * - - i 为偶数时，二进制最低位为 0，不会新增 1
+     * -      countBits(i) = countBits(i / 2)
+     * - - i 为奇数时，二进制最低位为 1，会新增一个 1
+     * -      countBits(i) = countBits(i / 2) + 1
+     * - 状态定义：
+     * - result[i] 表示整数 i 的二进制中 1 的个数
+     * - 状态转移：
+     * - result[i] = result[i / 2] + (i % 2)
+     * - 由于 i / 2 < i，且按照 i 从小到大遍历，
+     * - 每次计算 result[i] 时，其子问题 result[i / 2] 已经计算完成，
+     * - 因此这是一个一维动态规划问题。
+     * - 初始状态：
+     * - result[0] = 0
+     * - result[1] = 1
+     * - 例子：
      * 0： 0
      * 1： 1
      * 2： 1 0
@@ -19,6 +42,8 @@ public class CountBits {
      * 8： 1 0 0 0
      * 9： 1 0 0 1
      * 10：1 0 1 0
+     * - 时间复杂度：O(n)
+     * - 空间复杂度：O(n)
      */
     public int[] countBits(int n) {
         int[] result = new int[n + 1];

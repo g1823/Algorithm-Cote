@@ -14,7 +14,7 @@ public class DailyTemperatures {
      * 单调栈
      * 常用于：在 O(n) 的时间复杂度内求出数组中各个元素右侧第一个更大的元素及其下标，然后一并得到其他信息。
      * 原理：维护一个单调递增或递减的栈，遍历一个新的元素时，判断栈内元素和新元素的大小关系（这里按照递减栈）
-     *  当栈内元素小于新元素时，直接将栈内元素取出，并可以得到栈内元素的下标与当前元素的差值
+     * 当栈内元素小于新元素时，直接将栈内元素取出，并可以得到栈内元素的下标与当前元素的差值
      *
      * @param temperatures 温度数组
      * @return 结果
@@ -49,6 +49,7 @@ public class DailyTemperatures {
     public int[] dailyTemperatures2(int[] temperatures) {
         // Stack 类是同步的，基于 Vector，这种设计对大多数应用场景来说显得过于复杂，并且性能较差。
         // Deque 更加灵活，既可以作为栈使用（LIFO），也可以作为双端队列使用（FIFO），可以从两端添加或删除元素。而 Stack 则是严格的栈结构，功能上较为单一。
+        // todo:推荐队列和栈
         Deque<Integer> stack = new LinkedList<Integer>();
         int[] result = new int[temperatures.length];
         for (int i = 0; i < temperatures.length; i++) {

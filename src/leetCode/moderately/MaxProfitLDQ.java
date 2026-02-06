@@ -4,11 +4,11 @@ package leetCode.moderately;
  * @author: gj
  * @description: 309. 买卖股票的最佳时机含冷冻期
  */
-public class MaxProfit {
+public class MaxProfitLDQ {
 
     public static void main(String[] args) {
         int[] prices = new int[]{1, 2, 4};
-        System.out.println(new MaxProfit().maxProfit(prices));
+        System.out.println(new MaxProfitLDQ().maxProfit(prices));
     }
 
 
