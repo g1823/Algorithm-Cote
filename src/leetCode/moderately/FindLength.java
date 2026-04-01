@@ -1,5 +1,8 @@
 package leetCode.moderately;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * @author: gj
  * @description: 718. 最长重复子数组
@@ -129,9 +132,118 @@ public class FindLength {
     }
 
     /**
-     * 二分查找 + 哈希
+     * * 二分查找 + Rolling Hash
+     * * 思路：
+     * * 1. 使用二分查找枚举最长重复子数组的长度 L。
+     * * 2. 对每个 L，使用 Rolling Hash 判断两个数组是否存在长度为 L 的相同子数组。
+     * * -------------------------
+     * * 一、为什么可以二分（单调性证明）
+     * * 设 f(L) 表示：是否存在长度为 L 的重复子数组。
+     * * 若 f(L) = true，说明存在长度为 L 的相同子数组：
+     * *    nums1[i ... i+L-1] == nums2[j ... j+L-1]
+     * * 那么必然有：
+     * *    nums1[i ... i+L-2] == nums2[j ... j+L-2]
+     * * 即长度 L-1 也一定存在。
+     * * 满足单调性：
+     * *    若某长度存在，则所有更短长度一定存在
+     * *    若某长度不存在，则所有更长长度一定不存在
+     * * 因此可以二分搜索最大满足条件的 L。
+     * * 搜索范围：
+     * *    L ∈ [0 , min(nums1.length , nums2.length)]
+     * * -------------------------
+     * * 二、如何判断是否存在长度为 L 的重复子数组
+     * * 使用 Rolling Hash（滚动哈希）。
+     * * 将长度为 L 的子数组映射为一个哈希值：
+     * * hash(a0 ... a(L-1)) = a0 * base^(L-1) + a1 * base^(L-2) + ... + a(L-1)
+     * * 为防止溢出，计算时对 mod 取模。
+     * * -------------------------
+     * * 三、Rolling Hash 的滑动更新原理
+     * * 假设当前窗口：
+     * *    nums[i ... i+L-1]
+     * * 其哈希值为：
+     * * hash_i = ai * base^(L-1) + a(i+1) * base^(L-2) + ... + a(i+L-1)
+     * * 下一个窗口：
+     * *    nums[i+1 ... i+L]
+     * * 哈希值应为：
+     * * hash_(i+1) = a(i+1) * base^(L-1) + ... + a(i+L)
+     * * 可以由 hash_i O(1) 推出：
+     * * hash_(i+1) = (hash_i - ai * base^(L-1)) * base + a(i+L)
+     * * -------------------------
+     * * 四、取模后仍然正确的原因
+     * * 模运算满足同余性质：
+     * * (a - b) mod k = ((a mod k) - (b mod k) + k) mod k
+     * * 因此：
+     * * (hash_i - ai * power) % mod 与 ((hash_i % mod) - (ai * power % mod) + mod) % mod
+     * * 等价。
+     * * 所以在每一步计算中取模不会破坏 Rolling Hash 的正确性。
+     * * -------------------------
+     * * 五、判断两个数组是否存在长度 L 的重复子数组
+     * * 1. 计算 nums1 所有长度 L 子数组的哈希值，存入 HashSet
+     * * 2. 滑动计算 nums2 的长度 L 子数组哈希
+     * * 3. 若某个哈希存在于 HashSet 中，则说明存在重复子数组
+     * * -------------------------
+     * * 六、时间复杂度
+     * * 二分次数：O(log(min(m,n)))
+     * * 每次检查：Rolling Hash 遍历两个数组：O(m + n)
+     * * 总复杂度：O((m + n) log(min(m,n)))
+     * *
      */
     public int findLength3(int[] nums1, int[] nums2) {
-        return 0;
+        int left = 0, right = Math.min(nums1.length, nums2.length);
+        while (left < right) {
+            int mid = (right + left) >> 2;
+            if (check(nums1, nums2, mid)) {
+                left = mid;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return left;
     }
+
+    int mod = 1000000009, base = 113;
+
+    private boolean check(int[] nums1, int[] nums2, int len) {
+
+        long hashA = 0;
+        // 初始化
+        for (int i = 0; i < len; i++) {
+            hashA = (hashA * base + nums1[i]) % mod;
+        }
+        Set<Long> bucketA = new HashSet<Long>();
+        bucketA.add(hashA);
+        long mult = qPow(base, len - 1);
+        for (int i = len; i < nums1.length; i++) {
+            hashA = ((hashA - nums1[i - len] * mult % mod + mod) % mod * base + nums1[i]) % mod;
+            bucketA.add(hashA);
+        }
+        long hashB = 0;
+        for (int i = 0; i < len; i++) {
+            hashB = (hashB * base + nums2[i]) % mod;
+        }
+        if (bucketA.contains(hashB)) {
+            return true;
+        }
+        for (int i = len; i < nums2.length; i++) {
+            hashB = ((hashB - nums2[i - len] * mult % mod + mod) % mod * base + nums2[i]) % mod;
+            if (bucketA.contains(hashB)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // 使用快速幂计算 x^n % mod 的值
+    public long qPow(long x, long n) {
+        long ret = 1;
+        while (n != 0) {
+            if ((n & 1) != 0) {
+                ret = ret * x % mod;
+            }
+            x = x * x % mod;
+            n >>= 1;
+        }
+        return ret;
+    }
+
 }
