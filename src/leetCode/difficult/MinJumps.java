@@ -140,4 +140,64 @@ public class MinJumps {
         // 【兜底】理论上总能到达，return res 不会执行
         return res;
     }
+
+    /**
+     * 优化版本：在 minJumps 基础上的 4 点改进
+     * <p>
+     * 优化点一：computeIfAbsent 替代 putIfAbsent + get（减少一次 map 查询）
+     * 优化点二：ArrayDeque 替代 LinkedList（去节点对象开销）
+     * 优化点三：跳过冗余左右步 —— 当 arr[cur-1] == arr[cur] 时，cur-1 已在值映射中会被一同入队，无需单独加
+     * 优化点四：值跳转循环前置 + 入队时提前检测目标 —— 目标在同值组中时省掉一整层 BFS
+     */
+    public int minJumps2(int[] arr) {
+        int n = arr.length;
+        if (n == 1) return 0;
+
+        // 【步骤1】构建值到索引的映射（优化：computeIfAbsent 一次查询）
+        Map<Integer, List<Integer>> map = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            map.computeIfAbsent(arr[i], k -> new ArrayList<>()).add(i);
+        }
+
+        // 【步骤2】初始化 BFS（优化：ArrayDeque 替代 LinkedList）
+        int[] visited = new int[n];
+        ArrayDeque<Integer> queue = new ArrayDeque<>();
+        queue.add(0);
+        visited[0] = 1;
+        int res = 0;
+
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i++) {
+                int cur = queue.poll();
+
+                // 【优化四】值跳转放最前面：同值组展开最多节点，且可能直达目标
+                List<Integer> sameValues = map.get(arr[cur]);
+                for (int j : sameValues) {
+                    if (visited[j] == 0) {
+                        // 提前检测：目标在同值组中，省掉一整层入队/出队
+                        if (j == n - 1) return res + 1;
+                        queue.add(j);
+                        visited[j] = 1;
+                    }
+                }
+                // 【核心优化】清除映射，保证每个值组只遍历一次
+                sameValues.clear();
+
+                // 【优化三】跳过冗余左右步：邻居值相同时已在值跳转中处理
+                if (cur > 0 && arr[cur - 1] != arr[cur] && visited[cur - 1] == 0) {
+                    queue.add(cur - 1);
+                    visited[cur - 1] = 1;
+                }
+                if (cur < n - 1 && arr[cur + 1] != arr[cur] && visited[cur + 1] == 0) {
+                    // 提前检测：右边就是目标
+                    if (cur + 1 == n - 1) return res + 1;
+                    queue.add(cur + 1);
+                    visited[cur + 1] = 1;
+                }
+            }
+            res++;
+        }
+        return res;
+    }
 }
