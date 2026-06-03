@@ -90,7 +90,7 @@ public class EarliestFinishTime {
         }
         // 先游玩的项目最早结束时间已定，遍历后游玩项目，计算最小时间
         int result = Integer.MAX_VALUE;
-        for (int i= 0; i < secondStartTime.length; i++) {
+        for (int i = 0; i < secondStartTime.length; i++) {
             result = Math.min(
                     result,
                     Math.max(firstMinFinishTime, secondStartTime[i]) + secondDuration[i]
