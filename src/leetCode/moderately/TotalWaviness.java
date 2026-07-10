@@ -3,7 +3,7 @@ package leetCode.moderately;
 import java.util.Arrays;
 
 /**
- * @description: 3751. 范围内总波动值 I
+ * @description: 3751. 范围内总波动值 I  (数位DP dfs+记忆化搜索)
  */
 public class TotalWaviness {
     public static void main(String[] args) {
