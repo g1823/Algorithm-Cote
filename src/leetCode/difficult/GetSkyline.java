@@ -138,9 +138,62 @@ public class GetSkyline {
     }
 
     /**
-     * 扫描线+优先队列
+     * 扫描线+优先队列（延迟删除）
      */
     class Solution1 {
+        public List<List<Integer>> getSkyline(int[][] buildings) {
+            List<Event> events = new ArrayList<>();
+            for (int[] b : buildings) {
+                events.add(new Event(b[0], b[2], true));
+                events.add(new Event(b[1], b[2], false));
+            }
+            events.sort(Comparator.comparingInt(a -> a.x));
 
+            // 延迟删除：标记待删除高度及其次数（同一高度有多个建筑时，需要删除多次）
+            Map<Integer, Integer> pending = new HashMap<>();
+            PriorityQueue<Integer> pq = new PriorityQueue<>((a, b) -> Integer.compare(b, a));
+            List<List<Integer>> res = new ArrayList<>();
+            int preMax = 0, i = 0;
+
+            while (i < events.size()) {
+                int x = events.get(i).x;
+                // 同一 x 的所有事件必须全部处理完再检查高度，避免顺序影响
+                while (i < events.size() && events.get(i).x == x) {
+                    Event e = events.get(i++);
+                    if (e.isLeft) {
+                        pq.add(e.height);
+                    } else {
+                        // 不直接删除，而是标记待删，等它到堆顶时才真正弹出
+                        pending.put(e.height, pending.getOrDefault(e.height, 0) + 1);
+                    }
+                }
+
+                // 将堆顶已被标记删除的高度全部弹出
+                while (!pq.isEmpty() && pending.getOrDefault(pq.peek(), 0) > 0) {
+                    int h = pq.poll();
+                    pending.put(h, pending.get(h) - 1);
+                    if (pending.get(h) == 0) pending.remove(h);
+                }
+
+                int curMax = pq.isEmpty() ? 0 : pq.peek();
+                if (curMax != preMax) {
+                    res.add(Arrays.asList(x, curMax));
+                    preMax = curMax;
+                }
+            }
+            return res;
+        }
+
+        class Event {
+            int x;
+            int height;
+            boolean isLeft;
+
+            public Event(int x, int height, boolean isLeft) {
+                this.x = x;
+                this.height = height;
+                this.isLeft = isLeft;
+            }
+        }
     }
 }
