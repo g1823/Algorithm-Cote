@@ -40,4 +40,61 @@ public class FindCircleNum {
             }
         }
     }
+
+    /**
+     * 并查集
+     */
+    class Solution2 {
+        public int findCircleNum(int[][] isConnected) {
+            int n = isConnected.length;
+            int[] parent = new int[n];
+            int[] rank = new int[n];
+            // 初始时，每个节点的父级都指向自己
+            for (int i = 0; i < n; i++) {
+                parent[i] = i;
+            }
+            // 遍历下三角（或上三角）
+            for (int i = n - 1; i >= 0; i--) {
+                for (int j = 0; j < i; j++) {
+                    // i可以到达j ，合并i和j
+                    if (isConnected[i][j] == 1) {
+                        union(parent, rank, i, j);
+                    }
+                }
+            }
+            int count = 0;
+            for (int i = 0; i < n; i++) {
+                if (i == parent[i]) {
+                    count++;
+                }
+            }
+            return count;
+        }
+
+        private void union(int[] parent, int[] rank, int i, int j) {
+            int iRoot = find(parent, i), jRoot = find(parent, j);
+            // i和j的根节点一致，无需处理
+            if (iRoot == jRoot) {
+                return;
+            }
+            // 合并，把矮树挂在高树下
+            if (rank[iRoot] > rank[jRoot]) {
+                parent[jRoot] = iRoot;
+            } else if (rank[iRoot] < rank[jRoot]) {
+                parent[iRoot] = jRoot;
+            }
+            // 相同深度则挂在i的根节点下，并更新深度
+            else {
+                parent[jRoot] = iRoot;
+                rank[iRoot]++;
+            }
+        }
+
+        private int find(int[] parent, int i) {
+            if (i != parent[i]) {
+                parent[i] = find(parent, parent[i]);
+            }
+            return parent[i];
+        }
+    }
 }
