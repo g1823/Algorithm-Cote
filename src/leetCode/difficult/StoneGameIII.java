@@ -1,7 +1,7 @@
 package leetCode.difficult;
 
 /**
- * @description: 1406. 石子游戏 III
+ * @description: 1406. 石子游戏 III 零和博弈（动态规划-博弈DP）
  */
 public class StoneGameIII {
     public String stoneGameIII(int[] stoneValue) {
