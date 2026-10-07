@@ -1,7 +1,5 @@
 package leetCode.moderately;
 
-import javafx.util.Pair;
-
 import java.util.*;
 
 /**
@@ -9,6 +7,43 @@ import java.util.*;
  * @description: 373. 查找和最小的 K 对数字
  */
 public class KSmallestPairs {
+
+    private static class Pair<K, V> {
+        private final K key;
+        private final V value;
+
+        Pair(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public K getKey() {
+            return key;
+        }
+
+        public V getValue() {
+            return value;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Pair<?, ?>)) return false;
+            Pair<?, ?> pair = (Pair<?, ?>) o;
+            return Objects.equals(key, pair.key) && Objects.equals(value, pair.value);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(key, value);
+        }
+
+        @Override
+        public String toString() {
+            return key + "=" + value;
+        }
+    }
+
     public static void main(String[] args) {
         int[] nums1 = new int[]{1, 7, 11};
         int[] nums2 = new int[]{2, 4, 6};
