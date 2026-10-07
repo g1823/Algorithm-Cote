@@ -1,5 +1,7 @@
 package leetCode.moderately;
 
+import javafx.util.Pair;
+
 import java.util.*;
 
 /**
@@ -13,6 +15,7 @@ public class KSmallestPairs {
         System.out.println(new KSmallestPairs().kSmallestPairs(nums1, nums2, 3));
     }
 
+
     /**
      * 思路：
      * 由于两个数组均为有序数组，那么二者之和在某种程度上也是有序的。
@@ -24,19 +27,17 @@ public class KSmallestPairs {
      * 而未扩展元素可以保证不存在比当前元素小，因为未扩展的元素(X)一定比已扩展元素中同一行的元素(Y)要大，而Y又一定小于等于堆顶元素。
      */
     public List<List<Integer>> kSmallestPairs(int[] nums1, int[] nums2, int k) {
-        PriorityQueue<Map.Entry<Integer, Integer>> minHeap = new PriorityQueue<>(
-                (a, b) -> nums1[a.getKey()] + nums2[a.getValue()] - nums1[b.getKey()] - nums2[b.getValue()]
-        );
+        PriorityQueue<Pair<Integer, Integer>> minHeap = new PriorityQueue<>((a, b) -> nums1[a.getKey()] + nums2[a.getValue()] - nums1[b.getKey()] - nums2[b.getValue()]);
         int m = nums1.length, n = nums2.length;
         for (int i = 0; i < m; i++) {
-            minHeap.add(Map.entry(i, 0));
+            minHeap.add(new Pair<>(i, 0));
         }
         List<List<Integer>> result = new ArrayList<>();
         for (int i = 0; i < k; i++) {
-            Map.Entry<Integer, Integer> node = minHeap.poll();
+            Pair<Integer, Integer> node = minHeap.poll();
             result.add(Arrays.asList(nums1[node.getKey()], nums2[node.getValue()]));
             if (node.getValue() + 1 < n) {
-                minHeap.add(Map.entry(node.getKey(), node.getValue() + 1));
+                minHeap.add(new Pair<>(node.getKey(), node.getValue() + 1));
             }
         }
         return result;
@@ -73,30 +74,28 @@ public class KSmallestPairs {
      * - 需要记录已经扩展的元素，因为一个元素可能从两个方向上(上方元素和左侧元素)扩展到，那么就有可能被两次加入到堆中造成重复，因此需要记录
      */
     public List<List<Integer>> kSmallestPairs2(int[] nums1, int[] nums2, int k) {
-        PriorityQueue<Map.Entry<Integer, Integer>> minHeap = new PriorityQueue<>(
-                (a, b) -> nums1[a.getKey()] + nums2[a.getValue()] - nums1[b.getKey()] - nums2[b.getValue()]
-        );
+        PriorityQueue<Pair<Integer, Integer>> minHeap = new PriorityQueue<>((a, b) -> nums1[a.getKey()] + nums2[a.getValue()] - nums1[b.getKey()] - nums2[b.getValue()]);
         int m = nums1.length, n = nums2.length;
         Set<String> set = new HashSet<>();
-        minHeap.add(Map.entry(0, 0));
+        minHeap.add(new Pair<>(0, 0));
         set.add("0_0");
         List<List<Integer>> result = new ArrayList<>();
 
         for (int i = 0; i < k; i++) {
-            Map.Entry<Integer, Integer> node = minHeap.poll();
+            Pair<Integer, Integer> node = minHeap.poll();
             int r = node.getKey(), c = node.getValue();
             result.add(Arrays.asList(nums1[r], nums2[c]));
             if (c + 1 < n) {
                 String key = r + "_" + (c + 1);
                 if (!set.contains(key)) {
-                    minHeap.add(Map.entry(r, c + 1));
+                    minHeap.add(new Pair<>(r, c + 1));
                     set.add(key);
                 }
             }
             if (r + 1 < m) {
                 String key = (r + 1) + "_" + c;
                 if (!set.contains(key)) {
-                    minHeap.add(Map.entry(r + 1, c));
+                    minHeap.add(new Pair<>(r + 1, c));
                     set.add(key);
                 }
             }
